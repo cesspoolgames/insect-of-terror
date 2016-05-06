@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour {
     private bool pooped = false;
     private Sprite normalSprite;  // For easily setting the final death image
     private Sprite poopedSprite;  // For easily setting the final death image
+    private System.DateTime poopedTime;  // Time I was pooped upon
 
 	// Use this for initialization
 	void Start () {
@@ -118,9 +119,14 @@ public class Enemy : MonoBehaviour {
     public void BecomePooped() {
         pooped = true;
         spriteRenderer.sprite = poopedSprite;
+        poopedTime = System.DateTime.Now;
     }
 
     public bool IsPooped() {
         return pooped;
+    }
+
+    public System.DateTime PoopedTime() {
+        return poopedTime;
     }
 }

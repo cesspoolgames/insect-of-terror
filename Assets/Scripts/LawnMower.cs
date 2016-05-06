@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class LawnMower : MonoBehaviour {
@@ -12,10 +13,24 @@ public class LawnMower : MonoBehaviour {
 	void Start () {
 	
 	}
-	
-	void FixedUpdate () {
-        if (true || targets.Count > 0)  {
-            Vector3 currentTarget = targets[0];
+
+    void FixedUpdate() {
+
+        // Get all enemies and sort them by the time they were pooped.
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        List<KeyValuePair<DateTime, Vector3>> whenWhere = new List<KeyValuePair<DateTime, Vector3>>();  // <Poop time, location>. We'll sort this soon.
+
+        foreach (var enemy in enemies) {
+            var enemyScript = enemy.GetComponent<Enemy>();
+            if (enemyScript && enemyScript.IsPooped()) {
+                // This enemy is pooped, add the poop time and location to the list 
+                whenWhere.Add(new KeyValuePair<DateTime, Vector3>(enemyScript.PoopedTime(), enemy.transform.position));
+            }
+        }
+        whenWhere.Sort((a, b) => a.Key.CompareTo(b.Key));  // Sort by poop time
+
+        if (whenWhere.Count > 0)  {
+            Vector3 currentTarget = whenWhere[0].Value;  // The position of the enemy
             Vector3 deltaVector = currentTarget - transform.position;
 
             float angle = transform.rotation.eulerAngles.z;
@@ -30,14 +45,20 @@ public class LawnMower : MonoBehaviour {
                 // If we look straight at target, start moving towards it
                 transform.position = Vector3.MoveTowards(transform.position, currentTarget, Time.deltaTime * .5f);
             }
-
-            if ((transform.position - currentTarget).sqrMagnitude < 1e-6) {
-                targets.RemoveAt(0);
-            }
         }
 	}
 
     public void AddTarget(Vector3 newTarget) {
         targets.Add(newTarget);
+    }
+
+    void OnTriggerStay2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Enemy") {
+            Enemy enemyScript = coll.gameObject.GetComponent<Enemy>();
+            if (enemyScript && enemyScript.IsPooped()) {
+                // TODO: Add score and yays
+                Destroy(coll.gameObject);
+            }
+        }
     }
 }
