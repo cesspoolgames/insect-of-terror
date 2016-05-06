@@ -8,10 +8,11 @@ public class LawnMower : MonoBehaviour {
     public float rotationSpeed;
 
     private List<Vector3> targets = new List<Vector3>();
+    private Rigidbody2D rigidbody;
 
 	// Use this for initialization
 	void Start () {
-	
+        rigidbody = GetComponent<Rigidbody2D>();
 	}
 
     void FixedUpdate() {
@@ -38,15 +39,15 @@ public class LawnMower : MonoBehaviour {
             if (deltaVector.y < 0) towardsAngle *= -1;  // Negate if stuff are negatable
             towardsAngle += 90;  // LawnMower graphic is 90 degrees to the computed degree
 
-            float calculatedAngle = Mathf.MoveTowardsAngle(angle, towardsAngle, 110 * Time.deltaTime);
+            float calculatedAngle = Mathf.MoveTowardsAngle(angle, towardsAngle, Time.deltaTime * rotationSpeed);
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, calculatedAngle));
 
-            if (calculatedAngle - angle < 5f) {
+            if (Mathf.DeltaAngle(towardsAngle, calculatedAngle) < 5f) { // FIXME: doesn't work well, think how to go forward stuff
                 // If we look straight at target, start moving towards it
-                transform.position = Vector3.MoveTowards(transform.position, currentTarget, Time.deltaTime * .5f);
+                rigidbody.AddForce(-transform.up.normalized * speed);
             }
         }
-	}
+    }
 
     public void AddTarget(Vector3 newTarget) {
         targets.Add(newTarget);

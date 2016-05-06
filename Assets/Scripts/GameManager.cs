@@ -19,10 +19,11 @@ public class GameManager : MonoBehaviour {
         }
 
         // Set game boundaries based on camera size
+        const float sizeRatio = 4f / 3f;
         top = Camera.main.orthographicSize;
         bottom = -top;
-        left = bottom;
-        right = top;
+        left = bottom * sizeRatio;
+        right = top * sizeRatio;
 
         DontDestroyOnLoad(gameObject);  // Keep GameManager on all scenes all the time ever
 	}
