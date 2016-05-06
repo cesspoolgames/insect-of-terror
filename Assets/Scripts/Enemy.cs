@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using MEC;
+using MovementEffects;
 
 public class Enemy : MonoBehaviour {
 
@@ -17,12 +17,15 @@ public class Enemy : MonoBehaviour {
     private Sprite poopedSprite;  // For easily setting the final death image
     private System.DateTime poopedTime;  // Time I was pooped upon
 
+    const float fadeSpeed = 2.4f;
+
 	// Use this for initialization
 	void Start () {
         spriteRenderer = GetComponent<SpriteRenderer>();
         ComputeEnemySprites(GameManager.instance.levelNumber);
         spriteRenderer.sprite = normalSprite;
         transform.Rotate(new Vector3(0, 0, Random.value * 360.0f));
+        Timing.RunCoroutine(_FadeIn(fadeSpeed));
 	}
 
     /// <summary>
@@ -78,18 +81,32 @@ public class Enemy : MonoBehaviour {
 
                 // Start coroutine
                 if (passingEdge) {
-                    Timing.StartUpdateCoroutine(PassLevelEdge(newPosition));
+                    Timing.RunCoroutine(_PassLevelEdge(newPosition));
                 }
             }
         }
     }
 
-    IEnumerator<float> PassLevelEdge(Vector3 newPosition) {
+    IEnumerator<float> _FadeIn(float alphaSpeed) {
+        float alpha = 0f;
+        while (alpha < 1.0f) {
+            Debug.Log(alpha);
+            alpha += alphaSpeed * Time.deltaTime;
+            if (alpha > 1.0f) alpha = 1.0f;
+
+            Color newColor = new Color(1, 1, 1, alpha);
+            spriteRenderer.material.color = newColor;
+
+            yield return 0f;
+        }
+    }
+
+    IEnumerator<float> _PassLevelEdge(Vector3 newPosition) {
         float alpha = 1.0f;
-        const float alphaSpeed = 2.8f;
+
         // Fade out
         while (alpha >= 0.01f) {
-            alpha -= alphaSpeed * Time.deltaTime;
+            alpha -= fadeSpeed * Time.deltaTime;
             if (alpha < 0) alpha = 0;
             Color newColor = new Color(1, 1, 1, alpha);
             spriteRenderer.material.color = newColor;
@@ -100,14 +117,8 @@ public class Enemy : MonoBehaviour {
         transform.position = newPosition;
 
         // Fade in
-        while (alpha < 1.0f) {
-            alpha += alphaSpeed * Time.deltaTime;
-            if (alpha > 1.0f) alpha = 1.0f;
-            Color newColor = new Color(1, 1, 1, alpha);
-            spriteRenderer.material.color = newColor;
-
-            yield return 0f;
-        }
+        IEnumerator<float> fadeInHandle = Timing.RunCoroutine(_FadeIn(fadeSpeed));
+        yield return Timing.WaitUntilDone(fadeInHandle);
 
         // Done!
         passingEdge = false;

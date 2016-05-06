@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour {
     public Image levelBackground;
     public Sprite[] backgroundSprites;
     public float levelBoundariesFactor;  // Takes the top/bottom/left/right of the GameManager and scales that down a bit
+    public GameObject enemyPrefab;
 
     // Level-specific boundaries, a bit differnet than GameManager boundaries
     [HideInInspector]
@@ -39,10 +40,41 @@ public class LevelManager : MonoBehaviour {
         right = GameManager.instance.right * levelBoundariesFactor;
         bottom = GameManager.instance.bottom * levelBoundariesFactor; 
         left = GameManager.instance.left * levelBoundariesFactor;
+
+        CreateEnemy();
+        CreateEnemy();
+        CreateEnemy();
+        CreateEnemy();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+    /// <summary>
+    /// Creates an enemy at one of the edges of the level.
+    /// </summary>
+    void CreateEnemy() {
+        Vector2 startPosition = new Vector2();  // Starting position for new enemy
+        switch (Mathf.FloorToInt(Random.value * 4f)) {
+            case 0:  // Top
+                startPosition.x = Random.Range(left, right);
+                startPosition.y = top;
+                break;
+            case 1:  // Right
+                startPosition.x = right;
+                startPosition.y = Random.Range(top, bottom);
+                break;
+            case 2:  // Bottom
+                startPosition.x = Random.Range(left, right);
+                startPosition.y = bottom;
+                break;
+            case 3:  // Left
+                startPosition.x = left;
+                startPosition.y = Random.Range(top, bottom);
+                break;
+        }
+        Instantiate(enemyPrefab, startPosition, Quaternion.identity);
+    }
 }

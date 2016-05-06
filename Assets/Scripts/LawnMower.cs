@@ -8,11 +8,11 @@ public class LawnMower : MonoBehaviour {
     public float rotationSpeed;
 
     private List<Vector3> targets = new List<Vector3>();
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rigidbody2d;
 
 	// Use this for initialization
 	void Start () {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody2d = GetComponent<Rigidbody2D>();
 	}
 
     void FixedUpdate() {
@@ -44,7 +44,7 @@ public class LawnMower : MonoBehaviour {
 
             if (Mathf.DeltaAngle(towardsAngle, calculatedAngle) < 5f) { // FIXME: doesn't work well, think how to go forward stuff
                 // If we look straight at target, start moving towards it
-                rigidbody.AddForce(-transform.up.normalized * speed);
+                rigidbody2d.AddForce(-transform.up.normalized * speed);
             }
         }
     }

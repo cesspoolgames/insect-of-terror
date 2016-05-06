@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using MEC;
+using MovementEffects;
 
 public class AssPoop : MonoBehaviour {
 
@@ -93,7 +93,7 @@ public class AssPoop : MonoBehaviour {
     /// Start the fading and dying coroutine. This function is called from an Invoke().
     /// </summary>
     void StartFading() {
-        Timing.StartUpdateCoroutine(FadeOutAndDie(fadeOutSpeed));
+        Timing.RunCoroutine(FadeOutAndDie(fadeOutSpeed));
     }
 
     void FixedUpdate () {
