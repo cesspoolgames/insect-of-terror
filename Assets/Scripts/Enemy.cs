@@ -90,7 +90,6 @@ public class Enemy : MonoBehaviour {
     IEnumerator<float> _FadeIn(float alphaSpeed) {
         float alpha = 0f;
         while (alpha < 1.0f) {
-            Debug.Log(alpha);
             alpha += alphaSpeed * Time.deltaTime;
             if (alpha > 1.0f) alpha = 1.0f;
 
