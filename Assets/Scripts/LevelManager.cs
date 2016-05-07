@@ -9,6 +9,8 @@ public class LevelManager : MonoBehaviour {
     public Sprite[] backgroundSprites;
     public float levelBoundariesFactor;  // Takes the top/bottom/left/right of the GameManager and scales that down a bit
     public GameObject enemyPrefab;
+    public float createEnemyEvery;  // Time in seconds between each enemy create calls
+    public int maxEnemies;  // Maximum enemies on the level, pooped or alive
 
     // Level-specific boundaries, a bit differnet than GameManager boundaries
     [HideInInspector]
@@ -41,10 +43,7 @@ public class LevelManager : MonoBehaviour {
         bottom = GameManager.instance.bottom * levelBoundariesFactor; 
         left = GameManager.instance.left * levelBoundariesFactor;
 
-        CreateEnemy();
-        CreateEnemy();
-        CreateEnemy();
-        CreateEnemy();
+        InvokeRepeating("MaybeCreateEnemy", 0, createEnemyEvery);
 	}
 	
 	// Update is called once per frame
@@ -76,5 +75,15 @@ public class LevelManager : MonoBehaviour {
                 break;
         }
         Instantiate(enemyPrefab, startPosition, Quaternion.identity);
+    }
+
+    /// <summary>
+    /// Called every X period of time, will create an enemy only if there are not too many enemies on the level.
+    /// </summary>
+    void MaybeCreateEnemy() {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        if (enemies.Length < maxEnemies) {
+            CreateEnemy();
+        }
     }
 }
