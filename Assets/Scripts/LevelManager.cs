@@ -35,11 +35,6 @@ public class LevelManager : MonoBehaviour {
         InvokeRepeating("MaybeCreateEnemy", 0, createEnemyEvery);
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
     /// <summary>
     /// Creates an enemy at one of the edges of the level.
     /// </summary>

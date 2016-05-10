@@ -42,7 +42,7 @@ public class LawnMower : MonoBehaviour {
             float calculatedAngle = Mathf.MoveTowardsAngle(angle, towardsAngle, Time.deltaTime * rotationSpeed);
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, calculatedAngle));
 
-            if (Mathf.DeltaAngle(towardsAngle, calculatedAngle) < 5f) { // FIXME: doesn't work well, think how to go forward stuff
+            if (Mathf.DeltaAngle(towardsAngle, calculatedAngle) < 5f) { // FIXME: doesn't work well, think how to go forward stuff. Update: I think it works actually...
                 // If we look straight at target, start moving towards it
                 rigidbody2d.AddForce(-transform.up.normalized * speed);
             }

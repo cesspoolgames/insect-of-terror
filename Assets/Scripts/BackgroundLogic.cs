@@ -14,8 +14,4 @@ public class BackgroundLogic : MonoBehaviour {
         levelBackground.GetComponent<Image>().sprite = backgroundSprite;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
