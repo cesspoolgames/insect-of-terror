@@ -13,6 +13,7 @@ public class BossTest : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rigidbody2d = GetComponent<Rigidbody2D>();
+        StartAction();  // TODO: Will be removed when there's a cutscene, so cutscene end will call it instead
 	}
 	
 	// Update is called once per frame
