@@ -14,6 +14,7 @@ public class Hero : MonoBehaviour {
     delegate void Behavior();
     Behavior currentBehavior = delegate () { };
     private bool flipped = false;
+    private float spriteWidth;
 
     private IEnumerator<float> fireCoroutineHandle;
 
@@ -23,10 +24,10 @@ public class Hero : MonoBehaviour {
         targetPosition = transform.position;
         Invoke("StartMoving", startMoveLate ? masterScript.timeBetweenMoves : 0);
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        Debug.Log(spriteRenderer.flipX);
         if (spriteRenderer.flipX) {
             flipped = true;  // Mark that we are flipped so we know when to shoot things reversed etc.
         }
+        spriteWidth = spriteRenderer.sprite.bounds.max.x - spriteRenderer.sprite.bounds.min.x;
         StartFiring();
 	}
 
@@ -56,8 +57,15 @@ public class Hero : MonoBehaviour {
                 yield return 0f;
             } else {
                 // Create poop
-                Quaternion rotation = Quaternion.identity;
+                Quaternion rotation = Quaternion.Euler(0, 0, Random.value * 360f);
                 Vector3 position = transform.position;
+
+                // Move poop's starting point to approximately where the poop gun is.
+                float horizontalDisplacement = spriteWidth;
+                if (flipped) {
+                    horizontalDisplacement *= -1;
+                }
+                position.x += horizontalDisplacement;
 
                 GameObject newPoop = (GameObject)Instantiate(poop, position, rotation);
                 if (flipped) {

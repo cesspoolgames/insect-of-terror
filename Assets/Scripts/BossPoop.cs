@@ -15,7 +15,10 @@ public class BossPoop : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        // Destroy myself when out of game area
+        if (transform.position.y < GameManager.instance.bottom * 2) {
+            Destroy(this.gameObject);
+        }
 	}
 
     void FixedUpdate() {
