@@ -20,16 +20,23 @@ public class Hero : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        EventManager eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
+        // Subscrive to events
+        eventManager.Subscribe("StartAction", StartAction);
+
         masterScript = GameObject.Find("HeroesCommon").GetComponent<HeroCommon>();
         targetPosition = transform.position;
-        Invoke("StartMoving", startMoveLate ? masterScript.timeBetweenMoves : 0);
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer.flipX) {
             flipped = true;  // Mark that we are flipped so we know when to shoot things reversed etc.
         }
         spriteWidth = spriteRenderer.sprite.bounds.max.x - spriteRenderer.sprite.bounds.min.x;
-        StartFiring();
 	}
+
+    void StartAction() {
+        Invoke("StartMoving", startMoveLate ? masterScript.timeBetweenMoves : 0);
+        StartFiring();
+    }
 
     void StartMoving() {
         currentBehavior += NormalBehavior;
