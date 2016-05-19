@@ -10,11 +10,7 @@ public class EventManager : MonoBehaviour {
     // 'event name' => dictionary of 'subscription id' => 'actual delegate'
     // The subscription id is optional for the subscriber so it can remove its subscription anytime.
     // Subscription id is per-event-name basis.
-    private Dictionary<string, Dictionary<float, System.Action>> eventTable;
-
-    void Start() {
-        eventTable = new Dictionary<string, Dictionary<float, System.Action>>();
-    }
+    private Dictionary<string, Dictionary<float, System.Action>> eventTable = new Dictionary<string, Dictionary<float, System.Action>>();
 
     public float Subscribe(string name, System.Action callMe) {
         if (!eventTable.ContainsKey(name)) {
