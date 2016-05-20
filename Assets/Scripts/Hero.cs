@@ -10,7 +10,7 @@ public class Hero : MonoBehaviour {
 
     private HeroCommon masterScript;
     private Vector2 targetPosition;
-    private bool waitForMove = false;
+    private bool waitForMove = true;  // Start immobile
     delegate void Behavior();
     Behavior currentBehavior = delegate () { };
     private bool flipped = false;
@@ -18,13 +18,16 @@ public class Hero : MonoBehaviour {
 
     private IEnumerator<float> fireCoroutineHandle;
 
-	// Use this for initialization
-	void Start () {
-        EventManager eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
+    void Awake() {
         // Subscrive to events
+        EventManager eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
         eventManager.Subscribe("StartAction", StartAction);
 
         masterScript = GameObject.Find("HeroesCommon").GetComponent<HeroCommon>();
+    }
+
+	// Use this for initialization
+	void Start () {
         targetPosition = transform.position;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer.flipX) {
@@ -35,13 +38,14 @@ public class Hero : MonoBehaviour {
 
     void StartAction() {
         Invoke("StartMoving", startMoveLate ? masterScript.timeBetweenMoves : 0);
-        StartFiring();
     }
 
     void StartMoving() {
-        currentBehavior += NormalBehavior;
+        Debug.Log("START!!!");
         waitForMove = false;
-        InvokeRepeating("AlternateWaitForMove", 0, masterScript.timeBetweenMoves);
+        currentBehavior += NormalBehavior;
+        StartFiring();
+        InvokeRepeating("AlternateWaitForMove", masterScript.timeBetweenMoves, masterScript.timeBetweenMoves);
     }
 
 	// Update is called once per frame
@@ -85,6 +89,7 @@ public class Hero : MonoBehaviour {
     }
 
     void StartFiring() {
+        Debug.Log("flip " + flipped + "  |  waitForMove" + waitForMove);
         fireCoroutineHandle = Timing.RunCoroutine(_FirePoop());
     }
 
