@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using MovementEffects;
 
 public class Boss0 : BossBase {
 
@@ -7,21 +8,26 @@ public class Boss0 : BossBase {
     public float rotationSpeed;
     public float switchTargetHeroTime;
     public float timeBetweenMinions;  // The creation rate essentially
+    public GameObject minionPrefab;
+    public int minionsPerSpawn;
+    public float minionDelay;
 
     private string targetHero = "right";  // "left" or "right". Will start with "left" because we invoke SwitchHero immediately
+
+    private IEnumerator<float> spawningCoroutine;
 
     delegate void Behavior();
     Behavior currentFixedBehavior = delegate () { };
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         // TODO: This is TEMP FOR DEVELOPMENT
         StartAction();
-	}
-	
-	void FixedUpdate () {
+    }
+
+    void FixedUpdate() {
         currentFixedBehavior();
-	}
+    }
 
     override public void StartAction() {
         base.StartAction();
@@ -57,5 +63,21 @@ public class Boss0 : BossBase {
         }
 
         // TODO: reset minion creation?
+        Timing.RunCoroutine(SpawnMinions());
     }
+
+    IEnumerator<float> SpawnMinions() {
+        for (int i = 0; i < minionsPerSpawn; i++) {
+            Quaternion rotation = transform.rotation;
+            Vector3 position = transform.position;
+
+            rotation *= Quaternion.Euler(0, 0, 180);
+
+            GameObject newMinion = (GameObject) Instantiate(minionPrefab, position, rotation);
+            newMinion.transform.Translate(new Vector3(0, bossHeight * 0.75f, 0));
+
+            yield return Timing.WaitForSeconds(minionDelay);
+        }
+    }
+
 }

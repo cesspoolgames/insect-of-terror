@@ -458,6 +458,9 @@ MonoBehaviour:
   rotationSpeed: 360
   switchTargetHeroTime: 2.2
   timeBetweenMinions: 0
+  minionPrefab: {fileID: 167428, guid: 071502f5a132a3844a9c5cf0bf495703, type: 2}
+  minionsPerSpawn: 11
+  minionDelay: 0.1
 --- !u!212 &521158846
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -537,7 +540,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 460490, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22366584, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_Camera
@@ -670,7 +673,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 432502, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11479348, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: levelNumber

@@ -19,10 +19,11 @@ public class Hero : MonoBehaviour {
     private IEnumerator<float> fireCoroutineHandle;
 
     void Awake() {
-        // Subscrive to events
+        // Subscribe to events
         EventManager eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
         eventManager.Subscribe("StartAction", StartAction);
 
+        // Get reference to Hero master script
         masterScript = GameObject.Find("HeroesCommon").GetComponent<HeroCommon>();
     }
 
@@ -41,7 +42,6 @@ public class Hero : MonoBehaviour {
     }
 
     void StartMoving() {
-        Debug.Log("START!!!");
         waitForMove = false;
         currentBehavior += NormalBehavior;
         StartFiring();
@@ -89,7 +89,6 @@ public class Hero : MonoBehaviour {
     }
 
     void StartFiring() {
-        Debug.Log("flip " + flipped + "  |  waitForMove" + waitForMove);
         fireCoroutineHandle = Timing.RunCoroutine(_FirePoop());
     }
 
