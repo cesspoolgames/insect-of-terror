@@ -27,4 +27,20 @@ public class GameManager : MonoBehaviour {
 
         DontDestroyOnLoad(gameObject);  // Keep GameManager on all scenes all the time ever
 	}
+
+    /// <summary>
+    /// Return the Enemy's normal and pooped sprites according to the zero-based index of enemies from the nice Enemies spritesheet
+    /// </summary>
+    /// <param name="index"></param>
+    public void ComputeEnemySprites(int index, out Sprite normalSprite, out Sprite poopedSprite) {
+        normalSprite = null;
+        poopedSprite = null;
+        Sprite[] enemySprites = Resources.LoadAll<Sprite>("enemies");
+        if (index < 0 || index >= enemySprites.Length / 2) {
+            Debug.LogError("Don't choose indices of pooped-upon enemy sprites or negative indices. Index is: " + index + ", Max sprites: " + enemySprites.Length);
+            return;
+        }
+        normalSprite = enemySprites[index];
+        poopedSprite = enemySprites[index + enemySprites.Length / 2];
+    }
 }

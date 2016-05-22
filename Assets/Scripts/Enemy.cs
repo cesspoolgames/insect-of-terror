@@ -19,27 +19,13 @@ public class Enemy : MonoBehaviour {
 
     const float fadeSpeed = 2.4f;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        ComputeEnemySprites(GameManager.instance.levelNumber);
+        GameManager.instance.ComputeEnemySprites(GameManager.instance.levelNumber, out normalSprite, out poopedSprite);
         spriteRenderer.sprite = normalSprite;
         transform.Rotate(new Vector3(0, 0, Random.value * 360.0f));
         Timing.RunCoroutine(_FadeIn(fadeSpeed));
-	}
-
-    /// <summary>
-    /// Change the Enemy's appearance according to the zero-based index of enemies from the nice Enemies spritesheet
-    /// </summary>
-    /// <param name="index"></param>
-    public void ComputeEnemySprites(int index) {
-        Sprite[] enemySprites = Resources.LoadAll<Sprite>("enemies");
-        if (index < 0 || index >= enemySprites.Length / 2) {
-            Debug.LogError("Don't choose indices of pooped-upon enemy sprites or negative indices. Index is: " + index + ", Max sprites: " + enemySprites.Length);
-            return;
-        }
-        normalSprite = enemySprites[index];
-        poopedSprite = enemySprites[index + enemySprites.Length / 2];
     }
 
     void FixedUpdate() {

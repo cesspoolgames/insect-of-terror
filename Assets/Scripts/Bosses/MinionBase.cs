@@ -7,4 +7,27 @@ using System.Collections;
 
 public class MinionBase : MonoBehaviour {
 
+    protected bool pooped = false;
+    protected SpriteRenderer spriteRenderer;
+
+    protected Sprite normalSprite;
+    protected Sprite poopedSprite;
+
+    virtual public void Start() {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        GameManager.instance.ComputeEnemySprites(GameManager.instance.levelNumber, out normalSprite, out poopedSprite);
+    }
+
+    virtual public void OnTriggerEnter2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Poop") {
+            BecomePooped();
+            Destroy(coll.gameObject);
+        }
+    }
+
+    public void BecomePooped() {
+        pooped = true;
+        GetComponent<Rigidbody2D>().gravityScale = 1f;
+        spriteRenderer.sprite = poopedSprite;
+    }
 }

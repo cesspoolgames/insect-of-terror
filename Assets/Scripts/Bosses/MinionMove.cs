@@ -5,14 +5,15 @@ using System.Collections;
 /// Minion movement, forward and optionally(?) wrap around stage
 /// </summary>
 
-public class MinionMove : MonoBehaviour {
+public class MinionMove : MinionBase {
 
     public float speed;
     public float maxRotation;
     public float rotationDelay;
     public bool wrapAroundWorld;
 
-    void Start() {
+    override public void Start() {
+        base.Start();
         InvokeRepeating("RotateABit", rotationDelay, rotationDelay);
     }
 
@@ -32,7 +33,9 @@ public class MinionMove : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        transform.Translate(Time.deltaTime * Vector3.up * speed);
+        if (!pooped) {
+            transform.Translate(Time.deltaTime * Vector3.up * speed);
+        }
     }
 
     /// <summary>

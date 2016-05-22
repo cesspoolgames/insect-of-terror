@@ -5,14 +5,17 @@ using MovementEffects;
 public class Boss0 : BossBase {
 
     public Hero leftHero, rightHero;
+    public float speed;
     public float rotationSpeed;
     public float switchTargetHeroTime;
-    public float timeBetweenMinions;  // The creation rate essentially
     public GameObject minionPrefab;
     public int minionsPerSpawn;
-    public float minionDelay;
+    public float minionDelay;  // The creation rate essentially
+    public float swayDistance;  // How much up/down to go
+    public bool startGoingUp;
 
     private string targetHero = "right";  // "left" or "right". Will start with "left" because we invoke SwitchHero immediately
+    private Vector3 targetPosition;  // Where to go to
 
     private IEnumerator<float> spawningCoroutine;
 
@@ -21,7 +24,13 @@ public class Boss0 : BossBase {
 
     // Use this for initialization
     void Start() {
-        // TODO: This is TEMP FOR DEVELOPMENT
+        if (startGoingUp) {
+            targetPosition = new Vector3(0, swayDistance, 0);
+        } else {
+            targetPosition = new Vector3(0, -swayDistance, 0);
+        }
+
+        // TODO: This is TEMP FOR DEVELOPMENT, remove
         StartAction();
     }
 
@@ -33,15 +42,16 @@ public class Boss0 : BossBase {
         base.StartAction();
         GetComponent<Animator>().enabled = false;
         currentFixedBehavior = FixedNormalBehavior;
+        currentFixedBehavior += FixedSwayBehavior;
         InvokeRepeating("SwitchHero", 0, switchTargetHeroTime);
     }
 
     void FixedNormalBehavior() {
         Quaternion lookAt;
         if (targetHero == "left") {
-            lookAt = Quaternion.LookRotation(leftHero.transform.position);
+            lookAt = Quaternion.LookRotation(leftHero.transform.position - transform.position);
         } else {
-            lookAt = Quaternion.LookRotation(rightHero.transform.position);
+            lookAt = Quaternion.LookRotation(rightHero.transform.position - transform.position);
         }
         lookAt.x = 0; lookAt.y = 0;  // So we rotate only on z-axis, though this is a quaternion so it's weird. huh?
 
@@ -53,6 +63,20 @@ public class Boss0 : BossBase {
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookAt, Time.deltaTime * rotationSpeed);
+    }
+
+    void FixedSwayBehavior() {
+        bool movingUp = targetPosition.y > 0;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * speed);
+        if (Vector3.Distance(transform.position, targetPosition) < Vector3.kEpsilon) {
+            if (movingUp) {
+                // Move down now
+                targetPosition = new Vector3(0, -swayDistance, 0);
+            } else {
+                // Move up now
+                targetPosition = new Vector3(0, swayDistance, 0);
+            }
+        }
     }
 
     void SwitchHero() {
