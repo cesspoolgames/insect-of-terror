@@ -22,6 +22,8 @@ public class MinionBase : MonoBehaviour {
         if (coll.gameObject.tag == "Poop") {
             BecomePooped();
             Destroy(coll.gameObject);
+        } else if (coll.gameObject.tag == "Player") {
+            coll.gameObject.SendMessage("FallDown");
         }
     }
 

@@ -13,10 +13,10 @@ public class Hero : MonoBehaviour {
     private bool waitForMove = true;  // Start immobile
     delegate void Behavior();
     Behavior currentBehavior = delegate () { };
+    Behavior currentFixedBehavior = delegate () { };
     private bool flipped = false;
     private float spriteWidth;
-
-    private IEnumerator<float> fireCoroutineHandle;
+    private float paralyzeStart;  // In game time
 
     void Awake() {
         // Subscribe to events
@@ -38,14 +38,20 @@ public class Hero : MonoBehaviour {
 	}
 
     void StartAction() {
-        Invoke("StartMoving", startMoveLate ? masterScript.timeBetweenMoves : 0);
+        if (startMoveLate) {
+            waitForMove = true;
+            Invoke("StartMoving", masterScript.timeBetweenMoves);
+        } else {
+            waitForMove = false;
+            Invoke("StartMoving", 0);
+        }
+        InvokeRepeating("AlternateWaitForMove", masterScript.timeBetweenMoves, masterScript.timeBetweenMoves);
+        StartFiring();  // Does not shoot on waitOnMove
     }
 
     void StartMoving() {
-        waitForMove = false;
         currentBehavior += NormalBehavior;
-        StartFiring();
-        InvokeRepeating("AlternateWaitForMove", masterScript.timeBetweenMoves, masterScript.timeBetweenMoves);
+        currentFixedBehavior += FixedMoveTowardsTargetPosition;
     }
 
 	// Update is called once per frame
@@ -64,7 +70,7 @@ public class Hero : MonoBehaviour {
 
     IEnumerator<float> _FirePoop() {
         while (true) {
-            if (waitForMove) {
+            if (waitForMove || IsParalyzed()) {
                 yield return 0f;
             } else {
                 // Create poop
@@ -89,14 +95,18 @@ public class Hero : MonoBehaviour {
     }
 
     void StartFiring() {
-        fireCoroutineHandle = Timing.RunCoroutine(_FirePoop());
+        Timing.RunCoroutine(_FirePoop());
     }
 
-    void StopFiring() {  // FIXME: Might not be used? Do we have constant fire? If so no need for the coroutine handle variable
-        Timing.KillCoroutine(fireCoroutineHandle);
-    }
+    //void StopFiring() {  // FIXME: Might not be used? Do we have constant fire? If so no need for the coroutine handle variable
+    //    Timing.KillCoroutine(_FirePoop().GetType());
+    //}
 
     void FixedUpdate() {
+        currentFixedBehavior();
+    }
+
+    void FixedMoveTowardsTargetPosition() {
         if (!waitForMove) {
             Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * masterScript.speed);
             transform.position = newPosition;
@@ -107,4 +117,48 @@ public class Hero : MonoBehaviour {
         waitForMove = !waitForMove;
     }
 
+    /// <summary>
+    /// When hit by a minion, fall down and do nothing for a few seconds
+    /// </summary>
+    void FallDown() {
+        if (IsParalyzed()) {
+            paralyzeStart = Time.realtimeSinceStartup;
+            return;
+        }
+
+        currentFixedBehavior -= FixedMoveTowardsTargetPosition;
+        paralyzeStart = Time.realtimeSinceStartup;
+
+        Timing.RunCoroutine(_GetUpSomeday());
+
+        if (flipped) {
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90f));
+        } else {
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90f));
+        }
+    }
+
+    /// <summary>
+    /// Should be invoked automatically from FallDown
+    /// </summary>
+    void GetUp() {
+        StartMoving();
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+    }
+
+    /// <summary>
+    /// Will not GetUp() until paralyzeStart is not too recent. It may be reset each time minion touches hero.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator<float> _GetUpSomeday() {
+        //yield return Timing.WaitForSeconds(masterScript.paralyzeTime);
+        while (IsParalyzed()) {
+            yield return Timing.WaitForSeconds(0.02f);
+        }
+        GetUp();
+    }
+
+    public bool IsParalyzed() {
+        return Time.realtimeSinceStartup - paralyzeStart < masterScript.paralyzeTime;
+    }
 }

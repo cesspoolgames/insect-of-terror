@@ -283,6 +283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   timeBetweenMoves: 1
+  paralyzeTime: 1.9
 --- !u!4 &316428707
 Transform:
   m_ObjectHideFlags: 0
@@ -456,7 +457,7 @@ MonoBehaviour:
   leftHero: {fileID: 378647101}
   rightHero: {fileID: 1101557828}
   speed: 0.3
-  rotationSpeed: 420
+  rotationSpeed: 600
   switchTargetHeroTime: 2.2
   minionPrefab: {fileID: 167428, guid: 071502f5a132a3844a9c5cf0bf495703, type: 2}
   minionsPerSpawn: 11
@@ -488,7 +489,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -190368163
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: bd5a816fa826ce746b35874e5b51b70e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
