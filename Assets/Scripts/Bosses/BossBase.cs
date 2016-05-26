@@ -3,6 +3,7 @@ using System.Collections;
 
 public class BossBase : MonoBehaviour {
 
+    public GameObject explosionPrefab;
     protected float bossHeight;
 
     void Awake() {
@@ -20,5 +21,16 @@ public class BossBase : MonoBehaviour {
         eventManager.Trigger("StartAction");
     }
 
+    virtual public void OnTriggerEnter2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Poop") {
+            // Create a new explosion with movement opposite to poop hit position
+            GameObject newExplosion = (GameObject) Instantiate(explosionPrefab, coll.transform.position, Quaternion.identity);
 
+            Explosion explosionScript = newExplosion.GetComponent<Explosion>();
+            Vector3 newDirection = (coll.transform.position - transform.position).normalized;
+            explosionScript.direction = newDirection;
+
+            Destroy(coll.gameObject);
+        }
+    }
 }

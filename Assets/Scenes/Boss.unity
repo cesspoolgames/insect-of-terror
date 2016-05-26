@@ -198,7 +198,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 455758, guid: cb60e9ba669c9e84cb160aa0cd767171, type: 2}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 188106, guid: cb60e9ba669c9e84cb160aa0cd767171, type: 2}
       propertyPath: m_Name
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  timeBetweenMoves: 1
+  timeBetweenMoves: 0.6
   paralyzeTime: 1.9
 --- !u!4 &316428707
 Transform:
@@ -419,6 +419,7 @@ GameObject:
   - 212: {fileID: 521158846}
   - 114: {fileID: 521158845}
   - 95: {fileID: 521158844}
+  - 61: {fileID: 521158848}
   m_Layer: 0
   m_Name: Boss0
   m_TagString: Untagged
@@ -454,11 +455,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f91bf78ca1106ca47ae5fc63a835f9b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 145464, guid: 669b6eca72f7f9347a55d3611e5e1254, type: 2}
   leftHero: {fileID: 378647101}
   rightHero: {fileID: 1101557828}
   speed: 0.3
   rotationSpeed: 600
-  switchTargetHeroTime: 2.2
+  switchTargetHeroTime: 2.6
   minionPrefab: {fileID: 167428, guid: 071502f5a132a3844a9c5cf0bf495703, type: 2}
   minionsPerSpawn: 11
   minionDelay: 0.1
@@ -506,6 +508,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+--- !u!61 &521158848
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 521158843}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: -0.000000017530777, y: 0.00000007012311}
+  serializedVersion: 2
+  m_Size: {x: 1.1002641, y: 0.6688983}
 --- !u!1001 &555699885
 Prefab:
   m_ObjectHideFlags: 0
@@ -543,7 +559,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 460490, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 22366584, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_Camera
@@ -676,7 +692,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 432502, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 11479348, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: levelNumber
@@ -722,7 +738,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 455758, guid: cb60e9ba669c9e84cb160aa0cd767171, type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 188106, guid: cb60e9ba669c9e84cb160aa0cd767171, type: 2}
       propertyPath: m_Name
