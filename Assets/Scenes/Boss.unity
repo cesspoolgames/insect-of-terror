@@ -559,7 +559,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 460490, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22366584, guid: 51dc58328d8f2a74ebc208d38ec9d672, type: 2}
       propertyPath: m_Camera
@@ -692,7 +692,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 432502, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11479348, guid: dc695b60eb088e441aab50b65cd8b36c, type: 2}
       propertyPath: levelNumber
@@ -759,6 +759,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1624071305}
+  - 114: {fileID: 1624071306}
   m_Layer: 0
   m_Name: BossStageManager
   m_TagString: Untagged
@@ -778,6 +779,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+--- !u!114 &1624071306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1624071304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5842e5453ae291f4f81aed26b133026c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bonusPrefab: {fileID: 163660, guid: b5e7206c3bc8362449dd7daf72acef01, type: 2}
+  bonusCreateMinDelay: 2
+  bonusCreateMaxDelay: 8
 --- !u!1001 &2081746003
 Prefab:
   m_ObjectHideFlags: 0
