@@ -59,4 +59,16 @@ public class Bonus : MonoBehaviour {
     public void ShrinkEnd() {
         Destroy(gameObject);
     }
+
+    /// <summary>
+    /// Handle bonus collecting with poops
+    /// </summary>
+    /// <param name="coll"></param>
+    void OnTriggerEnter2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Poop") {
+            // Let others know that a bonus was collected and die
+            eventManager.Trigger(actionToTrigger);
+            Destroy(gameObject);
+        }
+    }
 }

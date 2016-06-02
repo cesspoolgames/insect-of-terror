@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// <summary>
@@ -9,9 +10,17 @@ public class BossStageManager : MonoBehaviour {
 
     public GameObject bonusPrefab;
     public float bonusCreateMinDelay, bonusCreateMaxDelay;
+    public Text messageText;
+
+    private EventManager eventManager;
 
     void Start() {
         Invoke("SpawnBonus", Random.Range(bonusCreateMinDelay, bonusCreateMaxDelay));
+
+        eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
+        eventManager.Subscribe("RifleBonus", ApplyRifleBonus);
+        eventManager.Subscribe("TimeBonus", ApplyTimeBonus);
+        eventManager.Subscribe("PoopBonus", ApplyPoopBonus);
     }
 
     /// <summary>
@@ -32,4 +41,15 @@ public class BossStageManager : MonoBehaviour {
         Invoke("SpawnBonus", Random.Range(bonusCreateMinDelay, bonusCreateMaxDelay));
     }
 
+    void ApplyRifleBonus() {
+        messageText.text = "Oh my god... Machine-Gun!";
+    }
+
+    void ApplyTimeBonus() {
+        messageText.text = "Time Bonus acquired!";
+    }
+
+    void ApplyPoopBonus() {
+        messageText.text = "Collected Poop Bonus!";
+    }
 }

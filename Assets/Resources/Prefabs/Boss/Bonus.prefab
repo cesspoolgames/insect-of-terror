@@ -11,6 +11,7 @@ GameObject:
   - 212: {fileID: 21299080}
   - 95: {fileID: 9552268}
   - 114: {fileID: 11492374}
+  - 61: {fileID: 6144326}
   m_Layer: 0
   m_Name: Bonus
   m_TagString: Untagged
@@ -30,6 +31,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!61 &6144326
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 163660}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Size: {x: 0.64, y: 0.64}
 --- !u!95 &9552268
 Animator:
   serializedVersion: 3
