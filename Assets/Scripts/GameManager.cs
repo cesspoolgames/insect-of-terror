@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance;  // Singleton
     public int levelNumber = 0;
 
+    public Color basicColor;
+    public Color actionColor;
+
     [HideInInspector]
     public float top, right, bottom, left; 
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class LevelManager : MonoBehaviour {
@@ -9,6 +10,11 @@ public class LevelManager : MonoBehaviour {
     public GameObject enemyPrefab;
     public float createEnemyEvery;  // Time in seconds between each enemy create calls
     public int maxEnemies;  // Maximum enemies on the level, pooped or alive
+
+    public int timeLeftStart;
+    private int timeLeft;
+
+    private Text countdownValueText;
 
     // Level-specific boundaries, a bit differnet than GameManager boundaries
     [HideInInspector]
@@ -33,6 +39,15 @@ public class LevelManager : MonoBehaviour {
         left = GameManager.instance.left * levelBoundariesFactor;
 
         InvokeRepeating("MaybeCreateEnemy", 0, createEnemyEvery);
+
+        // Colorize text gameObjects
+        GameObject.Find("CountdownLabel").GetComponent<Text>().color = GameManager.instance.basicColor;
+        countdownValueText = GameObject.Find("CountdownValue").GetComponent<Text>();
+        countdownValueText.color = GameManager.instance.actionColor;
+
+        timeLeft = timeLeftStart;
+        UpdateCountdownText();
+        InvokeRepeating("CountdownTick", 1f, 1f);
 	}
 	
     /// <summary>
@@ -69,5 +84,15 @@ public class LevelManager : MonoBehaviour {
         if (enemies.Length < maxEnemies) {
             CreateEnemy();
         }
+    }
+
+    void UpdateCountdownText() {
+        // Update text
+        countdownValueText.text = timeLeft.ToString();
+    }
+
+    void CountdownTick() {
+        timeLeft--;
+        UpdateCountdownText();
     }
 }

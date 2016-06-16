@@ -75,6 +75,9 @@ public class AssPoop : MonoBehaviour {
     bool SendMessageToPoopedEnemies() {
         bool poopingHappened = false;
         foreach (var enemy in enemiesToBePooped) {
+            if (enemy == null) {
+                continue;
+            }
             if (!enemy.GetComponent<Enemy>().IsPooped()) {
                 enemy.SendMessage("BecomePooped");
                 poopingHappened = true;
