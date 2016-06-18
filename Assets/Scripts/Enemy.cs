@@ -76,6 +76,10 @@ public class Enemy : MonoBehaviour {
     IEnumerator<float> _FadeIn(float alphaSpeed) {
         float alpha = 0f;
         while (alpha < 1.0f) {
+            if (IsPooped()) {
+                yield break;
+            }
+
             alpha += alphaSpeed * Time.deltaTime;
             if (alpha > 1.0f) alpha = 1.0f;
 
@@ -91,6 +95,9 @@ public class Enemy : MonoBehaviour {
 
         // Fade out
         while (alpha >= 0.01f) {
+            if (IsPooped()) {
+                yield break;
+            }
             alpha -= fadeSpeed * Time.deltaTime;
             if (alpha < 0) alpha = 0;
             Color newColor = new Color(1, 1, 1, alpha);
