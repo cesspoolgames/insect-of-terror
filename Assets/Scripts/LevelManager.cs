@@ -16,6 +16,8 @@ public class LevelManager : MonoBehaviour {
 
     private Text countdownValueText;
 
+    private EventManager eventManager;
+
     // Level-specific boundaries, a bit differnet than GameManager boundaries
     [HideInInspector]
     public float top, right, bottom, left;
@@ -44,6 +46,10 @@ public class LevelManager : MonoBehaviour {
         GameObject.Find("CountdownLabel").GetComponent<Text>().color = GameManager.instance.basicColor;
         countdownValueText = GameObject.Find("CountdownValue").GetComponent<Text>();
         countdownValueText.color = GameManager.instance.actionColor;
+        GameObject.Find("Score").GetComponent<Text>().color = GameManager.instance.basicColor;
+
+        eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
+        eventManager.Subscribe("EnemyCollected", EnemyCollected);
 
         timeLeft = timeLeftStart;
         UpdateCountdownText();
@@ -94,5 +100,9 @@ public class LevelManager : MonoBehaviour {
     void CountdownTick() {
         timeLeft--;
         UpdateCountdownText();
+    }
+
+    void EnemyCollected() {
+        Debug.Log("Update score");
     }
 }

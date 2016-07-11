@@ -16,17 +16,14 @@ using System.Collections;
 // All rights preserved.
 // /////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MovementEffects
-{
-    public class Timing : MonoBehaviour
-    {
-        private class WaitingProcess
-        {
+namespace MovementEffects {
+    public class Timing : MonoBehaviour {
+        private class WaitingProcess {
             public Timing Instance;
             public Segment Timing;
             public IEnumerator<float> Process;
-            public IEnumerator<float> Trigger; 
-            public readonly List<IEnumerator<float>> Tasks = new List<IEnumerator<float>>(); 
+            public IEnumerator<float> Trigger;
+            public readonly List<IEnumerator<float>> Tasks = new List<IEnumerator<float>>();
         }
 
         public float TimeBetweenSlowUpdateCalls = 1f / 7f;
@@ -35,7 +32,7 @@ namespace MovementEffects
         public int NumberOfLateUpdateCoroutines;
         public int NumberOfSlowUpdateCoroutines;
 
-        public System.Action<System.Exception, IEnumerator<float>> OnError; 
+        public System.Action<System.Exception, IEnumerator<float>> OnError;
         public static System.Func<IEnumerator<float>, Segment, IEnumerator<float>> ReplacementFunction;
         private readonly List<WaitingProcess> _waitingProcesses = new List<WaitingProcess>();
 
@@ -59,28 +56,22 @@ namespace MovementEffects
         private IEnumerator<float>[] SlowUpdateProcesses = new IEnumerator<float>[ProcessArrayChunkSize];
 
         private static Timing _instance;
-        public static Timing Instance
-        {
-            get
-            {
-                if (_instance == null || !_instance.gameObject)
-                {
+        public static Timing Instance {
+            get {
+                if (_instance == null || !_instance.gameObject) {
                     GameObject instanceHome = GameObject.Find("Movement Effects");
 
-                    if(instanceHome == null)
-                    {
+                    if (instanceHome == null) {
                         instanceHome = new GameObject { name = "Movement Effects" };
 
                         System.Type movementType = System.Type.GetType("MovementEffects.Movement");
-                        if(movementType != null)
+                        if (movementType != null)
                             instanceHome.AddComponent(movementType);
 
                         _instance = instanceHome.AddComponent<Timing>();
-                    }
-                    else
-                    {
+                    } else {
                         System.Type movementType = System.Type.GetType("MovementEffects.Movement");
-                        if(movementType != null && instanceHome.GetComponent(movementType) == null) 
+                        if (movementType != null && instanceHome.GetComponent(movementType) == null)
                             instanceHome.AddComponent(movementType);
 
                         _instance = instanceHome.GetComponent<Timing>() ?? instanceHome.AddComponent<Timing>();
@@ -93,40 +84,30 @@ namespace MovementEffects
             set { _instance = value; }
         }
 
-        void Awake()
-        {
+        void Awake() {
             if (_instance == null)
                 _instance = this;
         }
 
-        void OnDestroy()
-        {
+        void OnDestroy() {
             if (_instance == this)
                 _instance = null;
         }
 
-        void Update()
-        {
+        void Update() {
             _runningUpdate = true;
 
-            for (int i = 0; i < _nextUpdateProcessSlot; i++)
-            {
+            for (int i = 0; i < _nextUpdateProcessSlot; i++) {
                 Profiler.BeginSample("Processing Coroutine");
 
-                if (UpdateProcesses[i] != null && !(Time.time < UpdateProcesses[i].Current))
-                {
-                    try 
-                    {
-                        if(!UpdateProcesses[i].MoveNext())
-                        {
+                if (UpdateProcesses[i] != null && !(Time.time < UpdateProcesses[i].Current)) {
+                    try {
+                        if (!UpdateProcesses[i].MoveNext()) {
                             UpdateProcesses[i] = null;
-                        }
-                        else if(float.IsNaN(UpdateProcesses[i].Current))
-                        {
+                        } else if (float.IsNaN(UpdateProcesses[i].Current)) {
                             if (ReplacementFunction == null)
                                 UpdateProcesses[i] = null;
-                            else
-                            {
+                            else {
                                 UpdateProcesses[i] = ReplacementFunction(UpdateProcesses[i], Segment.Update);
 
                                 ReplacementFunction = null;
@@ -134,9 +115,8 @@ namespace MovementEffects
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
-                        if(OnError == null)
+                    catch (System.Exception ex) {
+                        if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
                             OnError(ex, UpdateProcesses[i]);
@@ -151,29 +131,21 @@ namespace MovementEffects
             _runningUpdate = false;
 
 
-            if(_lastSlowUpdateCallTime + TimeBetweenSlowUpdateCalls < Time.realtimeSinceStartup)
-            {
+            if (_lastSlowUpdateCallTime + TimeBetweenSlowUpdateCalls < Time.realtimeSinceStartup) {
                 _runningSlowUpdate = true;
                 _lastSlowUpdateCallTime = Time.realtimeSinceStartup;
 
-                for(int i = 0;i < _nextSlowUpdateProcessSlot;i++)
-                {
+                for (int i = 0; i < _nextSlowUpdateProcessSlot; i++) {
                     Profiler.BeginSample("Processing Coroutine (Slow Update)");
 
-                    if(SlowUpdateProcesses[i] != null && !(Time.time < SlowUpdateProcesses[i].Current))
-                    {
-                        try
-                        {
-                            if(!SlowUpdateProcesses[i].MoveNext())
-                            {
+                    if (SlowUpdateProcesses[i] != null && !(Time.time < SlowUpdateProcesses[i].Current)) {
+                        try {
+                            if (!SlowUpdateProcesses[i].MoveNext()) {
                                 SlowUpdateProcesses[i] = null;
-                            }
-                            else if(float.IsNaN(SlowUpdateProcesses[i].Current))
-                            {
-                                if(ReplacementFunction == null)
+                            } else if (float.IsNaN(SlowUpdateProcesses[i].Current)) {
+                                if (ReplacementFunction == null)
                                     SlowUpdateProcesses[i] = null;
-                                else
-                                {
+                                else {
                                     SlowUpdateProcesses[i] = ReplacementFunction(SlowUpdateProcesses[i], Segment.SlowUpdate);
 
                                     ReplacementFunction = null;
@@ -181,9 +153,8 @@ namespace MovementEffects
                                 }
                             }
                         }
-                        catch (System.Exception ex)
-                        {
-                            if(OnError == null)
+                        catch (System.Exception ex) {
+                            if (OnError == null)
                                 Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                             else
                                 OnError(ex, SlowUpdateProcesses[i]);
@@ -198,8 +169,7 @@ namespace MovementEffects
                 _runningSlowUpdate = false;
             }
 
-            if (++_framesSinceUpdate > FramesUntilMaintenance)
-            {
+            if (++_framesSinceUpdate > FramesUntilMaintenance) {
                 _framesSinceUpdate = 0;
 
                 Profiler.BeginSample("Maintenance Task");
@@ -210,28 +180,20 @@ namespace MovementEffects
             }
         }
 
-        void FixedUpdate()
-        {
+        void FixedUpdate() {
             _runningFixedUpdate = true;
 
-            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++)
-            {
+            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++) {
                 Profiler.BeginSample("Processing Coroutine");
 
-                if (FixedUpdateProcesses[i] != null && !(Time.time < FixedUpdateProcesses[i].Current))
-                {
-                    try 
-                    {
-                        if (!FixedUpdateProcesses[i].MoveNext())
-                        {
+                if (FixedUpdateProcesses[i] != null && !(Time.time < FixedUpdateProcesses[i].Current)) {
+                    try {
+                        if (!FixedUpdateProcesses[i].MoveNext()) {
                             FixedUpdateProcesses[i] = null;
-                        }
-                        else if (float.IsNaN(FixedUpdateProcesses[i].Current))
-                        {
+                        } else if (float.IsNaN(FixedUpdateProcesses[i].Current)) {
                             if (ReplacementFunction == null)
                                 FixedUpdateProcesses[i] = null;
-                            else
-                            {
+                            else {
                                 FixedUpdateProcesses[i] = ReplacementFunction(FixedUpdateProcesses[i], Segment.FixedUpdate);
 
                                 ReplacementFunction = null;
@@ -239,8 +201,7 @@ namespace MovementEffects
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -256,28 +217,20 @@ namespace MovementEffects
             _runningFixedUpdate = false;
         }
 
-        void LateUpdate()
-        {
+        void LateUpdate() {
             _runningLateUpdate = true;
 
-            for (int i = 0; i < _nextLateUpdateProcessSlot; i++)
-            {
+            for (int i = 0; i < _nextLateUpdateProcessSlot; i++) {
                 Profiler.BeginSample("Processing Coroutine");
 
-                if (LateUpdateProcesses[i] != null && !(Time.time < LateUpdateProcesses[i].Current))
-                {
-                    try 
-                    {
-                        if (!LateUpdateProcesses[i].MoveNext())
-                        {
+                if (LateUpdateProcesses[i] != null && !(Time.time < LateUpdateProcesses[i].Current)) {
+                    try {
+                        if (!LateUpdateProcesses[i].MoveNext()) {
                             LateUpdateProcesses[i] = null;
-                        }
-                        else if (float.IsNaN(LateUpdateProcesses[i].Current))
-                        {
-                            if(ReplacementFunction == null)
+                        } else if (float.IsNaN(LateUpdateProcesses[i].Current)) {
+                            if (ReplacementFunction == null)
                                 LateUpdateProcesses[i] = null;
-                            else
-                            {
+                            else {
                                 LateUpdateProcesses[i] = ReplacementFunction(LateUpdateProcesses[i], Segment.LateUpdate);
 
                                 ReplacementFunction = null;
@@ -285,8 +238,7 @@ namespace MovementEffects
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -305,8 +257,7 @@ namespace MovementEffects
         /// <summary>
         /// This will kill all coroutines running on the current MEC instance.
         /// </summary>
-        public static void KillAllCoroutines()
-        {
+        public static void KillAllCoroutines() {
             if (_instance != null)
                 Destroy(_instance);
         }
@@ -314,8 +265,7 @@ namespace MovementEffects
         /// <summary>
         /// This will pause all coroutines running on the current MEC instance until ResumeAllCoroutines is called.
         /// </summary>
-        public static void PauseAllCoroutines()
-        {
+        public static void PauseAllCoroutines() {
             if (_instance != null)
                 _instance.enabled = false;
         }
@@ -324,61 +274,51 @@ namespace MovementEffects
         /// This resumes all coroutines on the current MEC instance if they are currently paused, otherwise it has
         /// no effect.
         /// </summary>
-        public static void ResumeAllCoroutines()
-        {
+        public static void ResumeAllCoroutines() {
             if (_instance != null)
                 _instance.enabled = true;
         }
 
-        private void RemoveUnused()
-        {
+        private void RemoveUnused() {
             int i, j;
-            for(i = j = 0;i < _nextUpdateProcessSlot;i++)
-            {
-                if(UpdateProcesses[i] != null)
-                {
-                    if(i != j)
+            for (i = j = 0; i < _nextUpdateProcessSlot; i++) {
+                if (UpdateProcesses[i] != null) {
+                    if (i != j)
                         UpdateProcesses[j] = UpdateProcesses[i];
                     j++;
                 }
             }
-            for(i = j;i < _nextUpdateProcessSlot;i++)
+            for (i = j; i < _nextUpdateProcessSlot; i++)
                 UpdateProcesses[i] = null;
 
             NumberOfUpdateCoroutines = _nextUpdateProcessSlot = j;
 
-            for(i = j = 0;i < _nextFixedUpdateProcessSlot;i++)
-            {
-                if(FixedUpdateProcesses[i] != null)
-                {
-                    if(i != j)
+            for (i = j = 0; i < _nextFixedUpdateProcessSlot; i++) {
+                if (FixedUpdateProcesses[i] != null) {
+                    if (i != j)
                         FixedUpdateProcesses[j] = FixedUpdateProcesses[i];
                     j++;
                 }
             }
-            for(i = j;i < _nextFixedUpdateProcessSlot;i++)
+            for (i = j; i < _nextFixedUpdateProcessSlot; i++)
                 FixedUpdateProcesses[i] = null;
 
             NumberOfFixedUpdateCoroutines = _nextFixedUpdateProcessSlot = j;
 
-            for(i = j = 0;i < _nextLateUpdateProcessSlot;i++)
-            {
-                if(LateUpdateProcesses[i] != null)
-                {
-                    if(i != j)
+            for (i = j = 0; i < _nextLateUpdateProcessSlot; i++) {
+                if (LateUpdateProcesses[i] != null) {
+                    if (i != j)
                         LateUpdateProcesses[j] = LateUpdateProcesses[i];
                     j++;
                 }
             }
-            for(i = j;i < _nextLateUpdateProcessSlot;i++)
+            for (i = j; i < _nextLateUpdateProcessSlot; i++)
                 LateUpdateProcesses[i] = null;
 
             NumberOfLateUpdateCoroutines = _nextLateUpdateProcessSlot = j;
 
-            for (i = j = 0; i < _nextSlowUpdateProcessSlot; i++)
-            {
-                if (SlowUpdateProcesses[i] != null)
-                {
+            for (i = j = 0; i < _nextSlowUpdateProcessSlot; i++) {
+                if (SlowUpdateProcesses[i] != null) {
                     if (i != j)
                         SlowUpdateProcesses[j] = SlowUpdateProcesses[i];
                     j++;
@@ -396,8 +336,7 @@ namespace MovementEffects
         /// <param name="coroutine">The new coroutine's handle.</param>
         /// <param name="timing">Whether to run it in the Update, FixedUpdate, or LateUpdate loop.</param>
         /// <returns>The coroutine's handle, which can be used for Wait and Kill operations.</returns>
-        public static IEnumerator<float> RunCoroutine(IEnumerator<float> coroutine, Segment timing = Segment.Update)
-        {
+        public static IEnumerator<float> RunCoroutine(IEnumerator<float> coroutine, Segment timing = Segment.Update) {
             return Instance.RunCoroutineOnInstance(coroutine, timing);
         }
 
@@ -407,15 +346,12 @@ namespace MovementEffects
         /// <param name="coroutine">The new coroutine's handle.</param>
         /// <param name="timing">Whether to run it in the Update, FixedUpdate, or LateUpdate loop.</param>
         /// <returns>The coroutine's handle, which can be used for Wait and Kill operations.</returns>
-        public IEnumerator<float> RunCoroutineOnInstance(IEnumerator<float> coroutine, Segment timing = Segment.Update) 
-        {
-            if(timing == Segment.Update)
-            {
-                if(_nextUpdateProcessSlot >= UpdateProcesses.Length)
-                {
+        public IEnumerator<float> RunCoroutineOnInstance(IEnumerator<float> coroutine, Segment timing = Segment.Update) {
+            if (timing == Segment.Update) {
+                if (_nextUpdateProcessSlot >= UpdateProcesses.Length) {
                     IEnumerator<float>[] oldArray = UpdateProcesses;
                     UpdateProcesses = new IEnumerator<float>[UpdateProcesses.Length + ProcessArrayChunkSize];
-                    for(int i = 0;i < oldArray.Length;i++)
+                    for (int i = 0; i < oldArray.Length; i++)
                         UpdateProcesses[i] = oldArray[i];
                 }
 
@@ -424,31 +360,24 @@ namespace MovementEffects
 
                 UpdateProcesses[currentSlot] = coroutine;
 
-                if(!_runningUpdate)
-                {
-                    try
-                    {
-                        if(!UpdateProcesses[currentSlot].MoveNext())
-                        {
+                if (!_runningUpdate) {
+                    try {
+                        if (!UpdateProcesses[currentSlot].MoveNext()) {
                             UpdateProcesses[currentSlot] = null;
-                        }
-                        else if(float.IsNaN(UpdateProcesses[currentSlot].Current))
-                        {
-                            if(ReplacementFunction == null)
+                        } else if (float.IsNaN(UpdateProcesses[currentSlot].Current)) {
+                            if (ReplacementFunction == null)
                                 UpdateProcesses[currentSlot] = null;
-                            else
-                            {
+                            else {
                                 UpdateProcesses[currentSlot] = ReplacementFunction(UpdateProcesses[currentSlot], timing);
 
                                 ReplacementFunction = null;
 
-                                if(UpdateProcesses[currentSlot] != null)
+                                if (UpdateProcesses[currentSlot] != null)
                                     UpdateProcesses[currentSlot].MoveNext();
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -460,11 +389,9 @@ namespace MovementEffects
 
                 return coroutine;
             }
-            
-            if(timing == Segment.FixedUpdate)
-            {
-                if (_nextFixedUpdateProcessSlot >= FixedUpdateProcesses.Length)
-                {
+
+            if (timing == Segment.FixedUpdate) {
+                if (_nextFixedUpdateProcessSlot >= FixedUpdateProcesses.Length) {
                     IEnumerator<float>[] oldArray = FixedUpdateProcesses;
                     FixedUpdateProcesses = new IEnumerator<float>[FixedUpdateProcesses.Length + ProcessArrayChunkSize];
                     for (int i = 0; i < oldArray.Length; i++)
@@ -476,31 +403,24 @@ namespace MovementEffects
 
                 FixedUpdateProcesses[currentSlot] = coroutine;
 
-                if(!_runningFixedUpdate)
-                {
-                    try
-                    {
-                        if(!FixedUpdateProcesses[currentSlot].MoveNext())
-                        {
+                if (!_runningFixedUpdate) {
+                    try {
+                        if (!FixedUpdateProcesses[currentSlot].MoveNext()) {
                             FixedUpdateProcesses[currentSlot] = null;
-                        }
-                        else if(float.IsNaN(FixedUpdateProcesses[currentSlot].Current))
-                        {
-                            if(ReplacementFunction == null)
+                        } else if (float.IsNaN(FixedUpdateProcesses[currentSlot].Current)) {
+                            if (ReplacementFunction == null)
                                 FixedUpdateProcesses[currentSlot] = null;
-                            else
-                            {
+                            else {
                                 FixedUpdateProcesses[currentSlot] = ReplacementFunction(FixedUpdateProcesses[currentSlot], timing);
 
                                 ReplacementFunction = null;
 
-                                if(FixedUpdateProcesses[currentSlot] != null)
+                                if (FixedUpdateProcesses[currentSlot] != null)
                                     FixedUpdateProcesses[currentSlot].MoveNext();
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -512,11 +432,9 @@ namespace MovementEffects
 
                 return coroutine;
             }
-            
-            if (timing == Segment.LateUpdate)
-            {
-                if (_nextLateUpdateProcessSlot >= LateUpdateProcesses.Length)
-                {
+
+            if (timing == Segment.LateUpdate) {
+                if (_nextLateUpdateProcessSlot >= LateUpdateProcesses.Length) {
                     IEnumerator<float>[] oldArray = LateUpdateProcesses;
                     LateUpdateProcesses = new IEnumerator<float>[LateUpdateProcesses.Length + ProcessArrayChunkSize];
                     for (int i = 0; i < oldArray.Length; i++)
@@ -528,31 +446,24 @@ namespace MovementEffects
 
                 LateUpdateProcesses[currentSlot] = coroutine;
 
-                if(!_runningLateUpdate)
-                {
-                    try
-                    {
-                        if(!LateUpdateProcesses[currentSlot].MoveNext())
-                        {
+                if (!_runningLateUpdate) {
+                    try {
+                        if (!LateUpdateProcesses[currentSlot].MoveNext()) {
                             LateUpdateProcesses[currentSlot] = null;
-                        }
-                        else if(float.IsNaN(LateUpdateProcesses[currentSlot].Current))
-                        {
-                            if(ReplacementFunction == null)
+                        } else if (float.IsNaN(LateUpdateProcesses[currentSlot].Current)) {
+                            if (ReplacementFunction == null)
                                 LateUpdateProcesses[currentSlot] = null;
-                            else
-                            {
+                            else {
                                 LateUpdateProcesses[currentSlot] = ReplacementFunction(LateUpdateProcesses[currentSlot], timing);
 
                                 ReplacementFunction = null;
 
-                                if(LateUpdateProcesses[currentSlot] != null)
+                                if (LateUpdateProcesses[currentSlot] != null)
                                     LateUpdateProcesses[currentSlot].MoveNext();
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -565,10 +476,8 @@ namespace MovementEffects
                 return coroutine;
             }
 
-            if (timing == Segment.SlowUpdate)
-            {
-                if (_nextSlowUpdateProcessSlot >= SlowUpdateProcesses.Length)
-                {
+            if (timing == Segment.SlowUpdate) {
+                if (_nextSlowUpdateProcessSlot >= SlowUpdateProcesses.Length) {
                     IEnumerator<float>[] oldArray = SlowUpdateProcesses;
                     SlowUpdateProcesses = new IEnumerator<float>[SlowUpdateProcesses.Length + ProcessArrayChunkSize];
                     for (int i = 0; i < oldArray.Length; i++)
@@ -580,20 +489,14 @@ namespace MovementEffects
 
                 SlowUpdateProcesses[currentSlot] = coroutine;
 
-                if (!_runningSlowUpdate)
-                {
-                    try
-                    {
-                        if (!SlowUpdateProcesses[currentSlot].MoveNext())
-                        {
+                if (!_runningSlowUpdate) {
+                    try {
+                        if (!SlowUpdateProcesses[currentSlot].MoveNext()) {
                             SlowUpdateProcesses[currentSlot] = null;
-                        }
-                        else if (float.IsNaN(SlowUpdateProcesses[currentSlot].Current))
-                        {
+                        } else if (float.IsNaN(SlowUpdateProcesses[currentSlot].Current)) {
                             if (ReplacementFunction == null)
                                 SlowUpdateProcesses[currentSlot] = null;
-                            else
-                            {
+                            else {
                                 SlowUpdateProcesses[currentSlot] = ReplacementFunction(SlowUpdateProcesses[currentSlot], timing);
 
                                 ReplacementFunction = null;
@@ -603,8 +506,7 @@ namespace MovementEffects
                             }
                         }
                     }
-                    catch (System.Exception ex)
-                    {
+                    catch (System.Exception ex) {
                         if (OnError == null)
                             Debug.LogError("Exception while running coroutine. (Aborting coroutine)\n" + ex.Message + "\n" + ex.StackTrace);
                         else
@@ -624,8 +526,7 @@ namespace MovementEffects
         /// Stop the first coroutine in the list of the given type. Use coroutineFunction.GetType() to get the type.
         /// </summary>
         /// <returns>Whether the coroutine was found and stopped.</returns>
-        public static bool KillCoroutine(System.Type type)
-        {
+        public static bool KillCoroutine(System.Type type) {
             return _instance != null && _instance.KillCoroutineOnInstance(type);
         }
 
@@ -634,8 +535,7 @@ namespace MovementEffects
         /// </summary>
         /// <param name="coroutine">The handle to the coroutine that should be stopped.</param>
         /// <returns>Whether the coroutine was found and stopped.</returns>
-        public static bool KillCoroutine(IEnumerator<float> coroutine)
-        {
+        public static bool KillCoroutine(IEnumerator<float> coroutine) {
             return _instance != null && _instance.KillCoroutineOnInstance(coroutine);
         }
 
@@ -644,32 +544,25 @@ namespace MovementEffects
         /// </summary>
         /// <param name="type">The type of the coroutine to kill.</param>
         /// <returns>Whether the coroutine was found and stopped.</returns>
-        public bool KillCoroutineOnInstance(System.Type type)
-        {
+        public bool KillCoroutineOnInstance(System.Type type) {
             string typeString = type.ToString();
 
-            for (int i = 0; i < _nextUpdateProcessSlot; i++)
-            {
-                if (UpdateProcesses[i] != null && UpdateProcesses[i].GetType().ToString() == typeString)
-                {
+            for (int i = 0; i < _nextUpdateProcessSlot; i++) {
+                if (UpdateProcesses[i] != null && UpdateProcesses[i].GetType().ToString() == typeString) {
                     UpdateProcesses[i] = null;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++)
-            {
-                if (FixedUpdateProcesses[i] != null && FixedUpdateProcesses[i].GetType().ToString() == typeString)
-                {
+            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++) {
+                if (FixedUpdateProcesses[i] != null && FixedUpdateProcesses[i].GetType().ToString() == typeString) {
                     FixedUpdateProcesses[i] = null;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextLateUpdateProcessSlot; i++)
-            {
-                if (LateUpdateProcesses[i] != null && LateUpdateProcesses[i].GetType().ToString() == typeString)
-                {
+            for (int i = 0; i < _nextLateUpdateProcessSlot; i++) {
+                if (LateUpdateProcesses[i] != null && LateUpdateProcesses[i].GetType().ToString() == typeString) {
                     LateUpdateProcesses[i] = null;
                     return true;
                 }
@@ -683,30 +576,23 @@ namespace MovementEffects
         /// </summary>
         /// <param name="coroutine">The handle to the coroutine that should be stopped.</param>
         /// <returns>Whether the coroutine was found and stopped.</returns>
-        public bool KillCoroutineOnInstance(IEnumerator<float> coroutine)
-        {
-            for (int i = 0; i < _nextUpdateProcessSlot; i++)
-            {
-                if (UpdateProcesses[i] == coroutine)
-                {
+        public bool KillCoroutineOnInstance(IEnumerator<float> coroutine) {
+            for (int i = 0; i < _nextUpdateProcessSlot; i++) {
+                if (UpdateProcesses[i] == coroutine) {
                     UpdateProcesses[i] = null;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++)
-            {
-                if (FixedUpdateProcesses[i] == coroutine)
-                {
+            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++) {
+                if (FixedUpdateProcesses[i] == coroutine) {
                     FixedUpdateProcesses[i] = null;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextLateUpdateProcessSlot; i++)
-            {
-                if (LateUpdateProcesses[i] == coroutine)
-                {
+            for (int i = 0; i < _nextLateUpdateProcessSlot; i++) {
+                if (LateUpdateProcesses[i] == coroutine) {
                     LateUpdateProcesses[i] = null;
                     return true;
                 }
@@ -721,42 +607,33 @@ namespace MovementEffects
         /// <param name="coroutine">The handle to the coroutine that should be stopped.</param>
         /// <param name="segmentFoundOn">The segment that the coroutine was found on, if an instance was found.</param>
         /// <returns>Whether the coroutine was found and stopped.</returns>
-        public bool KillCoroutineOnInstance(IEnumerator<float> coroutine, out Segment segmentFoundOn)
-        {
-            for (int i = 0; i < _nextUpdateProcessSlot; i++)
-            {
-                if (UpdateProcesses[i] == coroutine)
-                {
+        public bool KillCoroutineOnInstance(IEnumerator<float> coroutine, out Segment segmentFoundOn) {
+            for (int i = 0; i < _nextUpdateProcessSlot; i++) {
+                if (UpdateProcesses[i] == coroutine) {
                     UpdateProcesses[i] = null;
                     segmentFoundOn = Segment.Update;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++)
-            {
-                if (FixedUpdateProcesses[i] == coroutine)
-                {
+            for (int i = 0; i < _nextFixedUpdateProcessSlot; i++) {
+                if (FixedUpdateProcesses[i] == coroutine) {
                     FixedUpdateProcesses[i] = null;
                     segmentFoundOn = Segment.FixedUpdate;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextLateUpdateProcessSlot; i++)
-            {
-                if (LateUpdateProcesses[i] == coroutine)
-                {
+            for (int i = 0; i < _nextLateUpdateProcessSlot; i++) {
+                if (LateUpdateProcesses[i] == coroutine) {
                     LateUpdateProcesses[i] = null;
                     segmentFoundOn = Segment.LateUpdate;
                     return true;
                 }
             }
 
-            for (int i = 0; i < _nextSlowUpdateProcessSlot; i++)
-            {
-                if (SlowUpdateProcesses[i] == coroutine)
-                {
+            for (int i = 0; i < _nextSlowUpdateProcessSlot; i++) {
+                if (SlowUpdateProcesses[i] == coroutine) {
                     SlowUpdateProcesses[i] = null;
                     segmentFoundOn = Segment.SlowUpdate;
                     return true;
@@ -775,18 +652,14 @@ namespace MovementEffects
         /// <param name="warnIfNotFound">Post a warning to the console if no hold action was actually performed.</param>
         /// <param name="instance">The instance that the otherCoroutine is attached to. Leave this as null
         /// unless you are using multiple instances of the Timing object.</param>
-        public static float WaitUntilDone(IEnumerator<float> otherCoroutine, bool warnIfNotFound = true, Timing instance = null)
-        {
-            if(instance == null)
+        public static float WaitUntilDone(IEnumerator<float> otherCoroutine, bool warnIfNotFound = true, Timing instance = null) {
+            if (instance == null)
                 instance = Instance;
 
-            for(int i = 0;i < instance._waitingProcesses.Count;i++)
-            {
-                if(instance._waitingProcesses[i].Trigger == otherCoroutine)
-                {
+            for (int i = 0; i < instance._waitingProcesses.Count; i++) {
+                if (instance._waitingProcesses[i].Trigger == otherCoroutine) {
                     WaitingProcess proc = instance._waitingProcesses[i];
-                    ReplacementFunction = (input, timing) =>
-                    {
+                    ReplacementFunction = (input, timing) => {
                         proc.Tasks.Add(input);
                         return null;
                     };
@@ -794,10 +667,8 @@ namespace MovementEffects
                     return float.NaN;
                 }
 
-                for(int j = 0;j < instance._waitingProcesses[i].Tasks.Count;j++)
-                {
-                    if(instance._waitingProcesses[i].Tasks[j] == otherCoroutine)
-                    {
+                for (int j = 0; j < instance._waitingProcesses[i].Tasks.Count; j++) {
+                    if (instance._waitingProcesses[i].Tasks[j] == otherCoroutine) {
                         WaitingProcess proc = new WaitingProcess();
                         proc.Instance = instance;
                         proc.Timing = instance._waitingProcesses[i].Timing;
@@ -808,8 +679,7 @@ namespace MovementEffects
 
                         proc.Process.MoveNext();
 
-                        ReplacementFunction = (input, timing) =>
-                        {
+                        ReplacementFunction = (input, timing) => {
                             proc.Timing = timing;
                             proc.Tasks.Add(input);
 
@@ -823,10 +693,8 @@ namespace MovementEffects
 
             Segment otherCoroutineSegment;
 
-            if(instance.KillCoroutineOnInstance(otherCoroutine, out otherCoroutineSegment))
-            {
-                ReplacementFunction = (input, timing) =>
-                {
+            if (instance.KillCoroutineOnInstance(otherCoroutine, out otherCoroutineSegment)) {
+                ReplacementFunction = (input, timing) => {
                     WaitingProcess proc = new WaitingProcess();
                     proc.Instance = instance;
                     proc.Timing = timing;
@@ -834,8 +702,7 @@ namespace MovementEffects
                     proc.Process = _StartWhenDone(proc);
                     proc.Tasks.Add(input);
 
-                    if (timing != otherCoroutineSegment)
-                    {
+                    if (timing != otherCoroutineSegment) {
                         instance.RunCoroutineOnInstance(proc.Process, otherCoroutineSegment);
                         return null;
                     }
@@ -846,27 +713,24 @@ namespace MovementEffects
                 return float.NaN;
             }
 
-            if(warnIfNotFound)
+            if (warnIfNotFound)
                 Debug.LogWarning("HoldUntilDone cannot hold: The coroutine instance that was passed in was not found.");
 
             return 0f;
         }
 
-        private static IEnumerator<float> _StartWhenDone(WaitingProcess processData)
-        {
+        private static IEnumerator<float> _StartWhenDone(WaitingProcess processData) {
             processData.Instance._waitingProcesses.Add(processData);
 
             yield return processData.Trigger.Current;
 
-            while(processData.Trigger.MoveNext())
-            {
+            while (processData.Trigger.MoveNext()) {
                 yield return processData.Trigger.Current;
             }
 
             processData.Instance._waitingProcesses.Remove(processData);
 
-            for(int i = 0;i < processData.Tasks.Count;i++)
-            {
+            for (int i = 0; i < processData.Tasks.Count; i++) {
                 processData.Instance.RunCoroutineOnInstance(processData.Tasks[i], processData.Timing);
             }
         }
@@ -876,14 +740,12 @@ namespace MovementEffects
         /// coroutine until the wwwObject is done.
         /// </summary>
         /// <param name="wwwObject">The www object to puase for.</param>
-        public static float WaitUntilDone(WWW wwwObject)
-        {
+        public static float WaitUntilDone(WWW wwwObject) {
             ReplacementFunction = (input, timing) => _StartWhenDone(wwwObject, input);
             return float.NaN;
         }
 
-        private static IEnumerator<float> _StartWhenDone(WWW www, IEnumerator<float> pausedProc)
-        {
+        private static IEnumerator<float> _StartWhenDone(WWW www, IEnumerator<float> pausedProc) {
             while (!www.isDone)
                 yield return 0f;
 
@@ -895,9 +757,8 @@ namespace MovementEffects
         /// Use in a yield return statement to wait for the specified number of seconds.
         /// </summary>
         /// <param name="waitTime">Number of seconds to wait.</param>
-        public static float WaitForSeconds(float waitTime)
-        {
-            if(float.IsNaN(waitTime)) waitTime = 0f;
+        public static float WaitForSeconds(float waitTime) {
+            if (float.IsNaN(waitTime)) waitTime = 0f;
             return Time.time + waitTime;
         }
 
@@ -907,9 +768,8 @@ namespace MovementEffects
         /// <param name="reference">A value that will be passed in to the supplied action.</param>
         /// <param name="delay">The number of seconds to wait before calling the action.</param>
         /// <param name="action">The action to call.</param>
-        public static void CallDelayed<TRef>(TRef reference, float delay, System.Action<TRef> action)
-        {
-            if(action == null) return;
+        public static void CallDelayed<TRef>(TRef reference, float delay, System.Action<TRef> action) {
+            if (action == null) return;
 
             if (delay > 0f)
                 RunCoroutine(_CallDelayBack(reference, delay, action));
@@ -917,8 +777,7 @@ namespace MovementEffects
                 action(reference);
         }
 
-        private static IEnumerator<float> _CallDelayBack<TRef>(TRef reference, float delay, System.Action<TRef> action)
-        {
+        private static IEnumerator<float> _CallDelayBack<TRef>(TRef reference, float delay, System.Action<TRef> action) {
             yield return Time.time + delay;
 
             CallDelayed(reference, 0f, action);
@@ -929,9 +788,8 @@ namespace MovementEffects
         /// </summary>
         /// <param name="delay">The number of seconds to wait before calling the action.</param>
         /// <param name="action">The action to call.</param>
-        public static void CallDelayed(float delay, System.Action action)
-        {
-            if(action == null) return;
+        public static void CallDelayed(float delay, System.Action action) {
+            if (action == null) return;
 
             if (delay > 0f)
                 RunCoroutine(_CallDelayBack(delay, action));
@@ -939,8 +797,7 @@ namespace MovementEffects
                 action();
         }
 
-        private static IEnumerator<float> _CallDelayBack(float delay, System.Action action)
-        {
+        private static IEnumerator<float> _CallDelayBack(float delay, System.Action action) {
             yield return Time.time + delay;
 
             CallDelayed(0f, action);
@@ -953,17 +810,14 @@ namespace MovementEffects
         /// <param name="action">The action to call every frame.</param>
         /// <param name="timing">The timing segment to run in.</param>
         /// <param name="onDone">An optional action to call when this function finishes.</param>
-        public static void CallContinuously(float timeframe, System.Action action, Segment timing = Segment.Update, System.Action onDone = null)
-        {
-            if(action != null)
+        public static void CallContinuously(float timeframe, System.Action action, Segment timing = Segment.Update, System.Action onDone = null) {
+            if (action != null)
                 RunCoroutine(_CallContinuously(timeframe, action, onDone), timing);
         }
 
-        private static IEnumerator<float> _CallContinuously(float timeframe, System.Action action, System.Action onDone = null)
-        {
+        private static IEnumerator<float> _CallContinuously(float timeframe, System.Action action, System.Action onDone = null) {
             float startTime = Time.time;
-            while (Time.time <= startTime + timeframe)
-            {
+            while (Time.time <= startTime + timeframe) {
                 yield return 0f;
 
                 action();
@@ -981,18 +835,15 @@ namespace MovementEffects
         /// <param name="action">The action to call every frame.</param>
         /// <param name="timing">The timing segment to run in.</param>
         /// <param name="onDone">An optional action to call when this function finishes.</param>
-        public static void CallContinuously<T>(T reference, float timeframe, System.Action<T> action, 
-            Segment timing = Segment.Update, System.Action<T> onDone = null)
-        {
+        public static void CallContinuously<T>(T reference, float timeframe, System.Action<T> action,
+            Segment timing = Segment.Update, System.Action<T> onDone = null) {
             RunCoroutine(_CallContinuously(reference, timeframe, action, onDone), timing);
         }
 
         private static IEnumerator<float> _CallContinuously<T>(T reference, float timeframe,
-            System.Action<T> action, System.Action<T> onDone = null)
-        {
+            System.Action<T> action, System.Action<T> onDone = null) {
             float startTime = Time.time;
-            while (Time.time <= startTime + timeframe)
-            {
+            while (Time.time <= startTime + timeframe) {
                 yield return 0f;
 
                 action(reference);
@@ -1003,50 +854,42 @@ namespace MovementEffects
         }
 
         [System.Obsolete("Unity coroutine function, use RunCoroutine instead.")]
-        public new Coroutine StartCoroutine(IEnumerator routine)
-        {
+        public new Coroutine StartCoroutine(IEnumerator routine) {
             return base.StartCoroutine(routine);
         }
 
         [System.Obsolete("Unity coroutine function, use RunCoroutine instead.")]
-        public new Coroutine StartCoroutine(string methodName, object value)
-        {
+        public new Coroutine StartCoroutine(string methodName, object value) {
             return base.StartCoroutine(methodName, value);
         }
 
         [System.Obsolete("Unity coroutine function, use RunCoroutine instead.")]
-        public new Coroutine StartCoroutine(string methodName)
-        {
+        public new Coroutine StartCoroutine(string methodName) {
             return base.StartCoroutine(methodName);
         }
 
         [System.Obsolete("Unity coroutine function, use RunCoroutine instead.")]
-        public new Coroutine StartCoroutine_Auto(IEnumerator routine)
-        {
+        public new Coroutine StartCoroutine_Auto(IEnumerator routine) {
             return base.StartCoroutine_Auto(routine);
         }
 
         [System.Obsolete("Unity coroutine function, use KillCoroutine instead.")]
-        public new void StopCoroutine(string methodName)
-        {
+        public new void StopCoroutine(string methodName) {
             base.StopCoroutine(methodName);
         }
 
         [System.Obsolete("Unity coroutine function, use KillCoroutine instead.")]
-        public new void StopCoroutine(IEnumerator routine)
-        {
+        public new void StopCoroutine(IEnumerator routine) {
             base.StopCoroutine(routine);
         }
 
         [System.Obsolete("Unity coroutine function, use KillCoroutine instead.")]
-        public new void StopCoroutine(Coroutine routine)
-        {
-            base.StopCoroutine(routine); 
+        public new void StopCoroutine(Coroutine routine) {
+            base.StopCoroutine(routine);
         }
 
         [System.Obsolete("Unity coroutine function, use KillAllCoroutines instead.")]
-        public new void StopAllCoroutines()
-        {
+        public new void StopAllCoroutines() {
             base.StopAllCoroutines();
         }
     }

@@ -10,9 +10,12 @@ public class LawnMower : MonoBehaviour {
     private List<Vector3> targets = new List<Vector3>();
     private Rigidbody2D rigidbody2d;
 
+    private EventManager eventManager;
+
 	// Use this for initialization
 	void Start () {
         rigidbody2d = GetComponent<Rigidbody2D>();
+        eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
 	}
 
     void FixedUpdate() {
@@ -57,7 +60,7 @@ public class LawnMower : MonoBehaviour {
         if (coll.gameObject.tag == "Enemy") {
             Enemy enemyScript = coll.gameObject.GetComponent<Enemy>();
             if (enemyScript && enemyScript.IsPooped()) {
-                // TODO: Add score and yays
+                eventManager.Trigger("EnemyCollected");
                 Destroy(coll.gameObject);
             }
         }
