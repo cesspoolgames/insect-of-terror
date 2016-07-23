@@ -10,17 +10,17 @@ public class NumberWidget : MonoBehaviour {
 
     protected List<GameObject> digits = new List<GameObject>();  // The digits making up the number. Each index is another digit to the left of the number (i.e. 10's 100's 1000's)
 
-    void _test() {
-        number = Mathf.FloorToInt(Random.Range(0, 1000000));
+    void amir() {
+        number = (int)((Mathf.Sin(Time.realtimeSinceStartup) + 1) * 500);
     }
-
     // Use this for initialization
     void Start() {
+        InvokeRepeating("amir", 1, 0.1f);
         if (numberSprites == null) {
             numberSprites = Resources.LoadAll<Sprite>("Widgets/roachnumberspng") as Sprite[];
             Assert.AreEqual(numberSprites.Length, 10);
         }
-        InvokeRepeating("_test", 0, .6f);
+        digits.Add(transform.GetChild(0).gameObject);  // Add the initial GameObject that the object already has, "0"
         SyncGameObjectsInstances();
     }
 
@@ -36,7 +36,6 @@ public class NumberWidget : MonoBehaviour {
 	void Update () {
         // Make sure we have enough digit game objects
         SyncGameObjectsInstances();
-        transform.Rotate(new Vector3(0, 0, 90 * Time.deltaTime));
 
         // Change each digit GameObject to the correct digit sprite
         int runningNumber = number;  // Helper to calculate the least-significant digit each iteration
@@ -53,7 +52,7 @@ public class NumberWidget : MonoBehaviour {
     /// </summary>
     private void RepositionDigits() {
         for (var i = 1; i < digits.Count; i++) {
-            digits[i].transform.rotation = transform.rotation;
+            digits[i].transform.rotation = digits[0].transform.rotation;
             digits[i].transform.position = digits[0].transform.position;
             digits[i].transform.Translate(new Vector3(-1 * i, 0, 0));
         }
@@ -63,10 +62,13 @@ public class NumberWidget : MonoBehaviour {
         if (NumberOfDigits() > digits.Count) {
             // We need to add digits GameObjects
             for (var i = 0; i < NumberOfDigits() - digits.Count; i++) {
-                // Create and position new GameObject
-                GameObject newDigit = new GameObject();
-                newDigit.AddComponent<SpriteRenderer>();
-                newDigit.transform.parent = gameObject.transform;
+                //// Create and position new GameObject
+                //GameObject newDigit = new GameObject();
+                //newDigit.AddComponent<SpriteRenderer>();
+                //newDigit.transform.parent = gameObject.transform;
+                //digits.Add(newDigit);
+                GameObject newDigit = Instantiate(digits[0]);
+                newDigit.transform.parent = transform;
                 digits.Add(newDigit);
             }
             RepositionDigits();
