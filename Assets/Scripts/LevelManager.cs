@@ -11,6 +11,9 @@ public class LevelManager : MonoBehaviour {
     public float createEnemyEvery;  // Time in seconds between each enemy create calls
     public int maxEnemies;  // Maximum enemies on the level, pooped or alive
 
+    public int score = 0;
+    public NumberWidget scoreWidget;
+
     public int timeLeftStart;
     private int timeLeft;
 
@@ -103,6 +106,7 @@ public class LevelManager : MonoBehaviour {
     }
 
     void EnemyCollected() {
-        Debug.Log("Update score");
+        score++;
+        scoreWidget.number = score;
     }
 }

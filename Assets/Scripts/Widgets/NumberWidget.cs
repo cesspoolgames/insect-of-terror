@@ -6,16 +6,14 @@ public class NumberWidget : MonoBehaviour {
 
     static Sprite[] numberSprites;
 
+    public float digitWidth = 1f;
     public int number = 0;  // TODO: Handle negative numbers
+    private int previousNumber = 0;
 
     protected List<GameObject> digits = new List<GameObject>();  // The digits making up the number. Each index is another digit to the left of the number (i.e. 10's 100's 1000's)
 
-    void amir() {
-        number = (int)((Mathf.Sin(Time.realtimeSinceStartup) + 1) * 500);
-    }
     // Use this for initialization
     void Start() {
-        InvokeRepeating("amir", 1, 0.1f);
         if (numberSprites == null) {
             numberSprites = Resources.LoadAll<Sprite>("Widgets/roachnumberspng") as Sprite[];
             Assert.AreEqual(numberSprites.Length, 10);
@@ -32,18 +30,23 @@ public class NumberWidget : MonoBehaviour {
         return numberOfDigits;
     }
 
-	// Update is called once per frame
-	void Update () {
-        // Make sure we have enough digit game objects
-        SyncGameObjectsInstances();
+    // Update is called once per frame
+    void Update() {
+        // Check if we need to refresh the digits
+        if (number != previousNumber) {
+            previousNumber = number;
 
-        // Change each digit GameObject to the correct digit sprite
-        int runningNumber = number;  // Helper to calculate the least-significant digit each iteration
-        for (int i = 0; i < digits.Count; i++) {
-            int digitValue = runningNumber - ((int)(runningNumber / 10) * 10);
-            SpriteRenderer renderer = digits[i].GetComponent<SpriteRenderer>();
-            renderer.sprite = numberSprites[digitValue];
-            runningNumber /= 10;  // "shift-right"
+            // Make sure we have enough digit game objects
+            SyncGameObjectsInstances();
+
+            // Change each digit GameObject to the correct digit sprite
+            int runningNumber = number;  // Helper to calculate the least-significant digit each iteration
+            for (int i = 0; i < digits.Count; i++) {
+                int digitValue = runningNumber - ((int)(runningNumber / 10) * 10);
+                SpriteRenderer renderer = digits[i].GetComponent<SpriteRenderer>();
+                renderer.sprite = numberSprites[digitValue];
+                runningNumber /= 10;  // "shift-right"
+            }
         }
     }
 
@@ -51,10 +54,13 @@ public class NumberWidget : MonoBehaviour {
     /// Move the digits GameObjects to the correct position. Helper function.
     /// </summary>
     private void RepositionDigits() {
+        Vector3 translation = new Vector3(0, 0, 0);
         for (var i = 1; i < digits.Count; i++) {
+            translation.x -= digitWidth;
             digits[i].transform.rotation = digits[0].transform.rotation;
             digits[i].transform.position = digits[0].transform.position;
-            digits[i].transform.Translate(new Vector3(-1 * i, 0, 0));
+            digits[i].transform.localScale = digits[0].transform.localScale;
+            digits[i].transform.Translate(translation);
         }
     }
 
@@ -63,10 +69,6 @@ public class NumberWidget : MonoBehaviour {
             // We need to add digits GameObjects
             for (var i = 0; i < NumberOfDigits() - digits.Count; i++) {
                 //// Create and position new GameObject
-                //GameObject newDigit = new GameObject();
-                //newDigit.AddComponent<SpriteRenderer>();
-                //newDigit.transform.parent = gameObject.transform;
-                //digits.Add(newDigit);
                 GameObject newDigit = Instantiate(digits[0]);
                 newDigit.transform.parent = transform;
                 digits.Add(newDigit);
