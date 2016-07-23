@@ -4,12 +4,20 @@ using NUnit.Framework;
 
 public class NumberWdigetTests {
 
+    GameObject gameObject;
+    NumberWidget widget1;
+
+    [SetUp]
+    public void SetUp() {
+        gameObject = new GameObject();
+        gameObject.AddComponent<NumberWidget>();
+        widget1 = gameObject.GetComponent<NumberWidget>();
+    }
+
     [Test]
-    public void EditorTest()
+    public void TestNumerOfDigits()
     {
         //Arrange
-        var widget1 = new NumberWidget();
-
         widget1.number = 0;
         Assert.AreEqual(widget1.NumberOfDigits(), 1);
 
@@ -31,4 +39,5 @@ public class NumberWdigetTests {
         widget1.number = 101231;
         Assert.AreEqual(widget1.NumberOfDigits(), 6);
     }
+
 }
